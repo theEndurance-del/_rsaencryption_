@@ -1,5 +1,7 @@
 #! /usr/bin/env python3
 
+# This one just does not work int encrypts and then is unable to decrypt the cipher it has generated
+
 import random
 
 def encrypt(plain):
