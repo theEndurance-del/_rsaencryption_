@@ -1,6 +1,10 @@
 import java.util.*;
 import java.io.IOException;
-
+/*
+This program does just the initial mathemetics for rsa encryption
+I am currently stuck at generating the private key component value
+Any help from anyone would be great
+*/
 public class smallenc
 {
     public static boolean isInteger(float num)
