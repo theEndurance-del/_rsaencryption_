@@ -1,8 +1,9 @@
 #! /usr/bin/env python3
-
-# This one just does not work int encrypts and then is unable to decrypt the cipher it has generated
-
+# This is a working program
 import random
+
+def isInteger(num):
+    return (num % 1 == 0)
 
 def encrypt(plain):
 
@@ -13,8 +14,8 @@ def encrypt(plain):
 
     while (repeator==1):
 
-        prime1 = random.randint(0, 2048)
-        prime2 = random.randint(0, 2048)
+        prime1 = random.randint(0, 256)
+        prime2 = random.randint(0, 256)
         count1 = 0
         count2 = 0
 
@@ -57,11 +58,11 @@ def encrypt(plain):
     while (repeator1 == 1):
 
         count    = 0
-        exponent = random.randint(1, 256)
+        exponent = random.randint(1, lambda_n)
 
-        for factor in range (1, phi_n):
+        for factor in range (1, lambda_n):
 
-            modfactor1 = phi_n % factor
+            modfactor1 = lambda_n % factor
             modfactor2 = exponent % factor
 
             if modfactor1 == 0 and modfactor2 == 0:
@@ -80,18 +81,18 @@ def encrypt(plain):
     # d=(1+(phi_n))/e
     # x is any positive integer
     print(" ")
-    repeator2 = 1
-    while (repeator2 == 1):
-        x = random.randint(0, 50)
+    x = 1
+    while (x != 0 and x < phi_n):
         d = (1 + x * (lambda_n)) / exponent
-        print("\r D value", d)
 
-        if d.is_integer():
-            repeator2 = 0
+        if isInteger(d):
+            d = int(d)
+            print("D value: ", d)
+            break
 
         else:
 
-            repeator2 = 1
+            x+=1
 
     print ("public key  :({}, {})".format(phi_n, exponent))
     print ("private key :({}, {})".format(phi_n, d))
@@ -104,10 +105,12 @@ def encrypt(plain):
     print             (rsa_encrypt_ascii)
     
     rsa_encrypt = ''.join(chr(i) for i in rsa_encrypt_ascii)
-    print       (rsa_encrypt)
+    print       ("encrypted: ", rsa_encrypt)
 
     rsa_decrypt   = [ ((ord(x) ** d) % phi_n) for x in rsa_encrypt]
     rsa_decrypted = ''.join(chr(i) for i in rsa_decrypt)
+
+    print         ("decrypted: ", rsa_decrypted)
 
 plain_text   = input("plain text to be encrypted >> ")
 string_value = str(plain_text)
