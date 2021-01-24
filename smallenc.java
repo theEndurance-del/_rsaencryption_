@@ -1,13 +1,10 @@
 import java.util.*;
 import java.io.IOException;
-/*
-This program does just the initial mathemetics for rsa encryption
-I am currently stuck at generating the private key component value
-Any help from anyone would be great
-*/
+import java.util.Scanner;
+
 public class smallenc
 {
-    public static boolean isInteger(float num)
+    public static boolean isInteger(double num)
     {
         return (num % 1 == 0);
     }
@@ -18,7 +15,7 @@ public class smallenc
         while (true)
         {
             int seedcount = 0;
-            int seed = rand.nextInt(50) + 1;
+            int seed = rand.nextInt(1024) + 1;
             for (int i = 1;i <= seed; i++)
             {
                 int modfactor = seed % i;
@@ -58,29 +55,23 @@ public class smallenc
         }
     }
 
-    public static int privatekey(int primeprod, int exp, int lambda) 
+    public static int privatekey(double primeprod, double exp, double lambda) 
     {
-        Random random = new Random();
-        int var = 0;
-        //euler's theorem is
-        //d = (1 + x*lambda) / e
-        //e = exp
-        //lambda as stated
-        //d is smaller than primeprod
-        //d = var
-        while(true)
+        double var = 0;
+        int x = 1;
+        while(x != 0)
         {
-            int seed = random.nextInt(200) + 1;
-            System.out.println("seed: "+seed);
-            var = (1 + (seed*lambda)) / exp;
-            if(isInteger(var))
+            var = (1 + (x*lambda)) / exp;
+            if(isInteger(var) && var < primeprod)
             {
                 break;
             }
+            x = x + 1;
         }
-        return var;
+        int finalvar = (int)var;
+        return finalvar;
     }
-    public static int encrypt(int plain)
+    public static int encrypt(int[] plain)
     {
         Random rand = new Random();
         int prime1 = primegen();
@@ -102,16 +93,29 @@ public class smallenc
             }
         }
         System.out.println(exponent);
-
-        // d.e = i mod (lambd_n)
-
         int decrypt = privatekey(n, exponent, lambda_n);
         System.out.println(decrypt);
         return 0;
     }
+
     public static void main(String[] args) 
     {
-        int num = encrypt(0);
-        System.out.println(num);
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter text to be encrypted: ");
+        String plainText = scanner.nextLine();
+        int[] ASCII = new int[plainText.length()];
+        int length = plainText.length();
+        for(int i = 0; i < length; i++)
+        {
+            char ch = plainText.charAt(i);
+            ASCII[i] = (int)ch;
+        }
+        for(int i = 0 ; i < length; i++)
+        {
+            System.out.print(ASCII[i]+", ");
+        }
+        System.out.println();
+        encrypt(ASCII);
+        scanner.close();
     }
 }
