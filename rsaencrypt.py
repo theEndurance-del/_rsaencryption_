@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 # This is a working program
 import random
+import base64
 
 def isInteger(num):
     return (num % 1 == 0)
@@ -98,6 +99,8 @@ def encrypt(plain):
     print ("private key :({}, {})".format(phi_n, d))
 
     print (plain)
+    
+    #encrypting using rsa algorithm
     ASCII = [ ord(x) for x in plain ]
     print (ASCII)
 
@@ -105,10 +108,21 @@ def encrypt(plain):
     print             (rsa_encrypt_ascii)
     
     rsa_encrypt = ''.join(chr(i) for i in rsa_encrypt_ascii)
-    print       ("encrypted: ", rsa_encrypt)
-
-    rsa_decrypt   = [ ((ord(x) ** d) % phi_n) for x in rsa_encrypt]
-    rsa_decrypted = ''.join(chr(i) for i in rsa_decrypt)
+    
+    #encrypting the cipher with base64
+    encrypted_bytes = rsa_encrypt.encode('utf8')
+    base64_bytes = base64.b64encode(encrypted_bytes)
+    rsa_base64_encrypt = base64_bytes.decode('utf8')
+    
+    print("encrypted: " rsa_base64_encrypt)
+    
+    #decrypting the base64 cipher
+    decrypt_bytes = rsa_base64_encrypt.encode('utf8')
+    b64_decrypt_bytes = base64.b64decode('utf8')
+    rsa_base64_decrypt = b64_decrypt_bytes.decode('utf8')
+    
+    rsa_decrypt   = [ ((ord(x) ** d) % phi_n) for x in rsa_base64_decrypt]
+    rsa_decrypted = ''.join(chr(i) for i in rsa_base64_decrypt)
 
     print         ("decrypted: ", rsa_decrypted)
 
