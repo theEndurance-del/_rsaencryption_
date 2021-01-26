@@ -114,7 +114,7 @@ def encrypt(plain):
     base64_bytes = base64.b64encode(encrypted_bytes)
     rsa_base64_encrypt = base64_bytes.decode('utf8')
     
-    print("encrypted: " rsa_base64_encrypt)
+    print("encrypted: ", rsa_base64_encrypt)
     
     #decrypting the base64 cipher
     decrypt_bytes = rsa_base64_encrypt.encode('utf8')
