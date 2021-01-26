@@ -118,11 +118,11 @@ def encrypt(plain):
     
     #decrypting the base64 cipher
     decrypt_bytes = rsa_base64_encrypt.encode('utf8')
-    b64_decrypt_bytes = base64.b64decode('utf8')
+    b64_decrypt_bytes = base64.b64decode(decrypt_bytes)
     rsa_base64_decrypt = b64_decrypt_bytes.decode('utf8')
     
     rsa_decrypt   = [ ((ord(x) ** d) % phi_n) for x in rsa_base64_decrypt]
-    rsa_decrypted = ''.join(chr(i) for i in rsa_base64_decrypt)
+    rsa_decrypted = ''.join(chr(i) for i in rsa_decrypt)
 
     print         ("decrypted: ", rsa_decrypted)
 
