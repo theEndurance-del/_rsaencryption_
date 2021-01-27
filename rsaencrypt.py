@@ -1,116 +1,88 @@
 #! /usr/bin/env python3
-# This is a working program
+
 import random
 import base64
 
+#function to check for integer
 def isInteger(num):
-    return (num % 1 == 0)
+    return (num % 1 ==0)
 
+#function to generate a random integer
+def primegen():
+    prime = 0
+    while (True):
+        prime = random.randint(1, 1025)
+        count = 0
+        for x in range (1, prime + 1):
+            modfactor = prime % x
+            if(modfactor == 0):
+                count = count + 1
+            
+        if (count == 2):
+            break
+    
+    return prime
+
+#function to check whether to number are co-prime or not
+def gcd(a, b):
+    count = 0
+    for x in range(1, b):
+        mod1 = a % x
+        mod2 = b % x
+        if mod1 == 0 and mod2 == 0:
+            count = count + 1
+    
+    return count == 1
+
+#function to generate decryption component
+def privateKeyComponent(primeprod, lambda_n, exponent):
+    var = 0
+    x = 1
+    for x in range(1,primeprod):
+        var = (1 + (x * lambda_n)) / exponent
+        if isInteger(var):
+            var = int(var)
+            break
+    
+    return var
+
+#function to encrypt and decrypt the string
 def encrypt(plain):
+    prime1 = primegen()
+    prime2 = primegen()
 
-    prime1 = 0
-    prime2 = 0
-    repeator = 1
-    primelist = [prime1, prime2]
-
-    while (repeator==1):
-
-        prime1 = random.randint(0, 256)
-        prime2 = random.randint(0, 256)
-        count1 = 0
-        count2 = 0
-
-        for i in range (1, prime1 + 1):
-            modfactor = prime1 % i
-            if modfactor == 0:
-                count1 = count1 + 1
-
-        for i in range (1, prime2 + 1):
-            modfactor = prime2 % i
-            if modfactor == 0:
-                count2 = count2 + 1
-
-        if count1 == 2 and count2 == 2:
-            primelist = [prime1, prime2]
-            print ("prime numbers", end=" ")
-            print (primelist)
-            repeator = 0
-
-        else:
-            repeator = 1
-
-    phi_n = prime1 * prime2
+    n = prime1 * prime2
     lambda_n = (prime1 - 1) * (prime2 - 1)
 
-    print ("lambda(n) " + str(lambda_n) + " phi(n) " + str(phi_n))
-
     exponent = 0
-    repeator1 = 1
-
-    while (repeator1 == 1):
-        count = 0
-        exponent = random.randint(1, lambda_n)
-
-        for factor in range (1, lambda_n):
-            modfactor1 = lambda_n % factor
-            modfactor2 = exponent % factor
-
-            if modfactor1 == 0 and modfactor2 == 0:
-                count = count + 1
-
-        if count == 1:
-            print     ("exponent value " + str(exponent))
-            repeator1 = 0
-
-        else:
-            repeator1 = 1
-
-    # d=(1+(phi_n))/e
-    # x is any positive integer
-    print(" ")
-    x = 1
-    while (x != 0 and x < phi_n):
-        d = (1 + x * (lambda_n)) / exponent
-
-        if isInteger(d):
-            d = int(d)
-            print("D value: ", d)
+    while(True):
+        exponent = random.randint(0,lambda_n)
+        if gcd(exponent, lambda_n):
             break
 
-        else:
-            x+=1
+    decrypt = privateKeyComponent(n, lambda_n, exponent)
 
-    print ("public key  :({}, {})".format(phi_n, exponent))
-    print ("private key :({}, {})".format(phi_n, d))
+    print ("Public Key:  ({}, {})".format(exponent, n))
+    print ("Private Key: ({}, {})".format(decrypt,n))
 
-    print (plain)
-    
-    #encrypting using rsa algorithm
-    ASCII = [ ord(x) for x in plain ]
-    print (ASCII)
-
-    rsa_encrypt_ascii = [ ((ord(x) ** exponent) % phi_n) for x in plain ]
-    print (rsa_encrypt_ascii)
-    
+    #encrpting to RSA to base64
+    rsa_encrypt_ascii = [ ((ord(x) ** exponent) % n) for x in plain ]
     rsa_encrypt = ''.join(chr(i) for i in rsa_encrypt_ascii)
-    
-    #encrypting the cipher with base64
-    encrypted_bytes = rsa_encrypt.encode('utf8')
-    base64_bytes = base64.b64encode(encrypted_bytes)
-    rsa_base64_encrypt = base64_bytes.decode('utf8')
-    
-    print ("encrypted: ", rsa_base64_encrypt)
-    
-    #decrypting the base64 cipher
-    decrypt_bytes = rsa_base64_encrypt.encode('utf8')
-    b64_decrypt_bytes = base64.b64decode(decrypt_bytes)
-    rsa_base64_decrypt = b64_decrypt_bytes.decode('utf8')
-    
-    rsa_decrypt = [ ((ord(x) ** d) % phi_n) for x in rsa_base64_decrypt]
-    rsa_decrypted = ''.join(chr(i) for i in rsa_decrypt)
+    rsa_encrypt_bytes = rsa_encrypt.encode('utf8')
+    rsa_encrypt_bytesB64 = base64.b64encode(rsa_encrypt_bytes)
+    rsa_encrypt_base64 = rsa_encrypt_bytesB64.decode('utf8')
 
-    print ("decrypted: ", rsa_decrypted)
+    print ("encrypted: {}".format(rsa_encrypt_base64))
 
-plain_text = input("plain text to be encrypted >> ")
-string_value = str(plain_text)
-encrypt (string_value)
+    #edcrypting from base64 from RSA
+    rsa_decrypt_bytes = rsa_encrypt_base64.encode('utf8')
+    rsa_decrypt_bytesB64 = base64.b64decode(rsa_decrypt_bytes)
+    rsa_decrypt_base64 = rsa_decrypt_bytesB64.decode('utf8')
+    rsa_decrypt_ascii = [ ((ord(x) ** decrypt) % n) for x in rsa_decrypt_base64 ]
+    rsa_decrypt = ''.join(chr(i) for i in rsa_decrypt_ascii)
+
+    print ("decrypted: ",rsa_decrypt)
+
+#driver segment
+String = input("Enter String to be encrypted: ")
+encrypt(String)
